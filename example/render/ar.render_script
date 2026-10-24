@@ -1,0 +1,37 @@
+function init(self)
+    self.camera = render.predicate({"ar_camera"})
+    self.marker = render.predicate({"ar_marker"})
+    self.gui = render.predicate({"gui"})
+    self.view, self.projection = vmath.matrix4(), vmath.matrix4()
+end
+function update(self)
+    local width, height = render.get_window_width(), render.get_window_height()
+    if width <= 0 or height <= 0 then return end
+    render.set_viewport(0, 0, width, height)
+    render.set_depth_mask(true)
+    render.clear({[graphics.BUFFER_TYPE_COLOR0_BIT] = vmath.vector4(0.025, 0.035, 0.05, 1),
+        [graphics.BUFFER_TYPE_DEPTH_BIT] = 1, [graphics.BUFFER_TYPE_STENCIL_BIT] = 0})
+    render.disable_state(graphics.STATE_DEPTH_TEST)
+    render.disable_state(graphics.STATE_CULL_FACE)
+    render.disable_state(graphics.STATE_STENCIL_TEST)
+    render.disable_state(graphics.STATE_BLEND)
+    render.set_depth_mask(false)
+    render.set_view(vmath.matrix4()); render.set_projection(vmath.matrix4())
+    render.draw(self.camera)
+    render.set_depth_mask(true)
+    render.enable_state(graphics.STATE_DEPTH_TEST)
+    render.set_view(self.view); render.set_projection(self.projection)
+    render.draw(self.marker)
+    render.disable_state(graphics.STATE_DEPTH_TEST)
+    render.enable_state(graphics.STATE_BLEND)
+    render.set_blend_func(graphics.BLEND_FACTOR_ONE, graphics.BLEND_FACTOR_ONE_MINUS_SRC_ALPHA)
+    render.enable_state(graphics.STATE_STENCIL_TEST)
+    render.set_view(vmath.matrix4())
+    render.set_projection(vmath.matrix4_orthographic(0, width, 0, height, -1, 1))
+    render.draw(self.gui)
+    render.disable_state(graphics.STATE_STENCIL_TEST)
+    render.disable_state(graphics.STATE_BLEND)
+end
+function on_message(self, id, message)
+    if id == hash("ar_frame") then self.view, self.projection = message.view, message.projection end
+end

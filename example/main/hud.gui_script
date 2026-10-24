@@ -1,0 +1,6 @@
+function init(self)
+    self.status = gui.get_node("status")
+end
+function on_message(self, id, message)
+    if id == hash("status") then gui.set_text(self.status, message.text) end
+end

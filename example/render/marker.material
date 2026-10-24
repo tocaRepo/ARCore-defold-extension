@@ -1,0 +1,9 @@
+name: "ar_marker"
+tags: "ar_marker"
+vertex_program: "/example/render/marker.vp"
+fragment_program: "/example/render/marker.fp"
+vertex_space: VERTEX_SPACE_LOCAL
+vertex_constants {
+  name: "world_view_proj"
+  type: CONSTANT_TYPE_WORLDVIEWPROJ
+}

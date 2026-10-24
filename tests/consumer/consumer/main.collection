@@ -1,0 +1,5 @@
+name: "independent_consumer"
+instances {
+  id: "main"
+  prototype: "/consumer/main.go"
+}

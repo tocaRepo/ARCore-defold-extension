@@ -1,0 +1,6 @@
+name: ARCore
+platforms:
+  android:
+    context:
+      # Keep this dynamic: the Android static libdl.a contains failing stubs.
+      dynamicLibs: ["dl"]

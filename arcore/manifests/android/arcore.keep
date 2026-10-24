@@ -1,0 +1,2 @@
+-keep class com.defold.arcore.** { *; }
+-keep class com.google.ar.core.** { *; }

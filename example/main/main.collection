@@ -1,0 +1,21 @@
+name: "arcore_example"
+instances {
+  id: "controller"
+  prototype: "/example/main/main.go"
+}
+instances {
+  id: "background"
+  prototype: "/example/main/background.go"
+}
+instances {
+  id: "marker1"
+  prototype: "/example/main/marker.go"
+}
+instances {
+  id: "marker2"
+  prototype: "/example/main/marker.go"
+}
+instances {
+  id: "hud"
+  prototype: "/example/main/hud.go"
+}

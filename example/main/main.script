@@ -1,0 +1,128 @@
+local camera = require "arcore_render.camera"
+
+local function hide_markers(self)
+    for i = 1, 2 do msg.post("marker" .. i .. "#mesh", "disable") end
+end
+local function status(self, text)
+    if text ~= self.status then
+        self.status = text
+        msg.post("hud#gui", "status", {text = text})
+        print("ARCore example: " .. text)
+    end
+end
+local function notice(self, text)
+    self.notice, self.notice_time = text, 2.5
+end
+local function control(self, x, y)
+    if y >= self.height * 0.12 then return nil end
+    return x < self.width / 2 and "remove" or "reset"
+end
+local function reset(self)
+    arcore.stop()
+    self.handles = {}
+    self.frame = nil
+    self.press = nil
+    self.notice, self.notice_time = nil, 0
+    hide_markers(self)
+    msg.post("background#mesh", "disable")
+    local ok, err = arcore.start({near_clip = 0.05, far_clip = 50})
+    status(self, ok and "Starting ARCore..." or err.message)
+end
+local function remove_last(self)
+    local handle = table.remove(self.handles)
+    if handle then arcore.release_anchor(handle) end
+    self.press = nil
+    hide_markers(self)
+end
+local function update_markers(self, frame)
+    hide_markers(self)
+    if not frame.tracking or not self.focused then return end
+    for _, anchor in ipairs(frame.anchors) do
+        for slot, handle in ipairs(self.handles) do
+            if handle == anchor.handle and anchor.tracking_state == "tracking" then
+                local id = "marker" .. slot
+                -- Authored marker lies in local XZ with +Y as its normal.
+                go.set_position(anchor.pose.position, id)
+                go.set_rotation(anchor.pose.rotation, id)
+                msg.post(id .. "#mesh", "enable")
+            end
+        end
+    end
+end
+
+function init(self)
+    msg.post(".", "acquire_input_focus")
+    self.camera = camera.new("background#mesh")
+    self.focused = true
+    window.set_listener(function(_, event)
+        if event == window.WINDOW_EVENT_FOCUS_LOST or event == window.WINDOW_EVENT_ICONIFIED then
+            self.focused = false; self.press = nil; hide_markers(self)
+        elseif event == window.WINDOW_EVENT_FOCUS_GAINED or event == window.WINDOW_EVENT_DEICONIFIED then
+            self.focused = true; self.press = nil
+        elseif event == window.WINDOW_EVENT_RESIZED then self.press = nil end
+    end)
+    reset(self)
+end
+
+function update(self, dt)
+    local width, height = window.get_size()
+    if width <= 0 or height <= 0 then return end
+    if self.width ~= width or self.height ~= height then self.press = nil end
+    self.width, self.height = width, height
+    local frame, err = arcore.poll(width, height)
+    if not frame then
+        self.tracking = false
+        if self.press and not self.press.control then self.press = nil end
+        status(self, err.message); hide_markers(self); return
+    end
+    if not frame.tracking and self.press and not self.press.control then self.press = nil end
+    if frame.fresh then
+        camera.upload(self.camera, frame)
+        msg.post("background#mesh", "enable")
+        msg.post("@render:", "ar_frame", {view = frame.view, projection = frame.projection})
+        self.frame = frame
+    end
+    -- Retain the whole render snapshot, including anchor poses, between images.
+    if self.frame and frame.tracking then update_markers(self, self.frame) else hide_markers(self) end
+    self.tracking = frame.tracking and self.focused
+    self.notice_time = math.max(0, (self.notice_time or 0) - dt)
+    if self.notice_time == 0 then self.notice = nil end
+    status(self, frame.status .. (frame.detail ~= "" and ("\n" .. frame.detail) or "") ..
+        "\nMarkers: " .. #self.handles .. "/2 | Planes: " .. #frame.planes ..
+        (self.notice and ("\n" .. self.notice) or ""))
+end
+
+function on_input(self, id, action)
+    if id == hash("remove") and action.pressed then remove_last(self); return true end
+    if id == hash("reset") and action.pressed then reset(self); return true end
+    if id ~= hash("tap") or not self.width or not self.focused then return false end
+    local x = action.screen_x or action.x * self.width / 720
+    local y = action.screen_y or action.y * self.height / 1280
+    if action.pressed then self.press = {x = x, y = y, control = control(self, x, y)} end
+    if self.press and (x - self.press.x)^2 + (y - self.press.y)^2 > 24^2 then self.press = nil end
+    if not action.released then return true end
+    local press = self.press; self.press = nil
+    if not press then return true end
+    -- The authored footer describes these two screen regions; no UI library is needed.
+    if press.control then
+        if press.control == control(self, x, y) then
+            if press.control == "remove" then remove_last(self) else reset(self) end
+        end
+        return true
+    end
+    if not self.tracking or #self.handles >= 2 or not self.frame then return true end
+    local hits, err = arcore.hit_test(x, y, {frame_id = self.frame.frame_id, session_generation = self.frame.session_generation})
+    if not hits then notice(self, err.message); return true end
+    if not hits[1] then notice(self, "No mapped plane here. Move the phone to scan a surface."); return true end
+    local hit = hits[1]
+    local handle, error = arcore.create_anchor({pose = hit.pose, plane_id = hit.plane_id,
+        frame_id = hit.frame_id, session_generation = hit.session_generation})
+    if handle then self.handles[#self.handles + 1] = handle else notice(self, error.message) end
+    return true
+end
+
+function final(self)
+    window.set_listener(nil)
+    arcore.stop()
+    camera.destroy(self.camera)
+end

@@ -1,0 +1,3 @@
+function update(self)
+    render.clear({[graphics.BUFFER_TYPE_COLOR0_BIT] = vmath.vector4(0.02, 0.1, 0.15, 1)})
+end

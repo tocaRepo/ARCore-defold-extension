@@ -1,0 +1,35 @@
+[project]
+title = ARCore Example
+version = 0.1.0
+
+[library]
+include_dirs = arcore arcore_render
+
+[bootstrap]
+main_collection = /example/main/main.collectionc
+render = /example/render/ar.renderc
+
+[input]
+game_binding = /example/main/example.input_bindingc
+use_accelerometer = 0
+
+[display]
+width = 720
+height = 1280
+high_dpi = 1
+vsync = 1
+dynamic_orientation = 1
+
+[android]
+package = com.defold.arcore.example
+version_code = 1
+minimum_sdk_version = 27
+immersive_mode = 1
+input_method = HiddenInputField
+
+[script]
+shared_state = 1
+
+[graphics]
+default_texture_min_filter = linear
+default_texture_mag_filter = linear

@@ -1,0 +1,12 @@
+mouse_trigger {
+  input: MOUSE_BUTTON_1
+  action: "tap"
+}
+key_trigger {
+  input: KEY_BACKSPACE
+  action: "remove"
+}
+key_trigger {
+  input: KEY_R
+  action: "reset"
+}

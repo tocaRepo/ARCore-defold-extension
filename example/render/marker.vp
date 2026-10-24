@@ -1,0 +1,8 @@
+#version 140
+in highp vec3 position;
+out mediump vec3 var_position;
+uniform vs_uniforms { highp mat4 world_view_proj; };
+void main() {
+    gl_Position = world_view_proj * vec4(position, 1.0);
+    var_position = position;
+}

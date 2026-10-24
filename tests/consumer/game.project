@@ -1,0 +1,22 @@
+[project]
+title = ARCore Consumer
+version = 0.1.0
+
+[bootstrap]
+main_collection = /consumer/main.collectionc
+render = /consumer/render.renderc
+
+[input]
+game_binding = /consumer/input.input_bindingc
+
+[display]
+width = 640
+height = 960
+
+[android]
+package = com.defold.arcore.consumer
+minimum_sdk_version = 27
+version_code = 1
+
+[script]
+shared_state = 1

@@ -1,0 +1,48 @@
+script: "/example/main/hud.gui_script"
+fonts {
+  name: "default"
+  font: "/builtins/fonts/default.font"
+}
+material: "/builtins/materials/gui.material"
+adjust_reference: ADJUST_REFERENCE_PARENT
+max_nodes: 8
+nodes {
+  position { x: 360 y: 1120 z: 0 }
+  size { x: 650 y: 210 z: 0 }
+  type: TYPE_TEXT
+  text: "Starting ARCore..."
+  font: "default"
+  id: "status"
+  color { x: 1 y: 1 z: 1 w: 1 }
+  outline { x: 0 y: 0 z: 0 w: 1 }
+  shadow { x: 0 y: 0 z: 0 w: 1 }
+  line_break: true
+  adjust_mode: ADJUST_MODE_STRETCH
+  yanchor: YANCHOR_TOP
+}
+nodes {
+  position { x: 360 y: 205 z: 0 }
+  size { x: 650 y: 100 z: 0 }
+  type: TYPE_TEXT
+  text: "Move to scan. Tap a surface to place up to two markers."
+  font: "default"
+  id: "instructions"
+  color { x: 1 y: 1 z: 1 w: 1 }
+  outline { x: 0 y: 0 z: 0 w: 1 }
+  line_break: true
+  adjust_mode: ADJUST_MODE_STRETCH
+  yanchor: YANCHOR_BOTTOM
+}
+nodes {
+  position { x: 360 y: 75 z: 0 }
+  size { x: 680 y: 100 z: 0 }
+  type: TYPE_TEXT
+  text: "Bottom left: Remove last\nBottom right: Reset / retry"
+  font: "default"
+  id: "controls"
+  color { x: 0.4 y: 0.9 z: 1 w: 1 }
+  outline { x: 0 y: 0 z: 0 w: 1 }
+  line_break: true
+  adjust_mode: ADJUST_MODE_STRETCH
+  yanchor: YANCHOR_BOTTOM
+}

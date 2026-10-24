@@ -1,0 +1,27 @@
+name: "ar_camera"
+tags: "ar_camera"
+vertex_program: "/arcore_render/camera.vp"
+fragment_program: "/arcore_render/camera.fp"
+vertex_space: VERTEX_SPACE_LOCAL
+fragment_constants {
+  name: "uv0"
+  type: CONSTANT_TYPE_USER
+  value { x: 0 y: 0 z: 0 w: 0 }
+}
+fragment_constants {
+  name: "uv1"
+  type: CONSTANT_TYPE_USER
+  value { x: 1 y: 0 z: 0 w: 0 }
+}
+fragment_constants {
+  name: "uv2"
+  type: CONSTANT_TYPE_USER
+  value { x: 0 y: 1 z: 0 w: 0 }
+}
+samplers {
+  name: "texture_sampler"
+  wrap_u: WRAP_MODE_CLAMP_TO_EDGE
+  wrap_v: WRAP_MODE_CLAMP_TO_EDGE
+  filter_min: FILTER_MODE_MIN_LINEAR
+  filter_mag: FILTER_MODE_MAG_LINEAR
+}

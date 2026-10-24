@@ -1,0 +1,4 @@
+material: "/example/render/marker.material"
+vertices: "/example/render/marker.buffer"
+primitive_type: PRIMITIVE_TRIANGLES
+position_stream: "position"

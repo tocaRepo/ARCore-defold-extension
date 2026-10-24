@@ -1,0 +1,7 @@
+local upload = require "arcore_render.camera"
+function init(self)
+    assert(type(upload.upload) == "function")
+    local capabilities = arcore.get_capabilities()
+    print("Independent consumer imported arcore: " .. capabilities.status)
+    msg.post("#mesh", "disable")
+end

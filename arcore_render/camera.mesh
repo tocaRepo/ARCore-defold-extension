@@ -1,0 +1,5 @@
+material: "/arcore_render/camera.material"
+vertices: "/arcore_render/camera.buffer"
+textures: "/builtins/graphics/particle_blob.png"
+primitive_type: PRIMITIVE_TRIANGLES
+position_stream: "position"
